@@ -1,8 +1,12 @@
 package com.academy.securityformLogin.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +21,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.academy.securityformLogin.domain.SecurityUser;
 import com.academy.securityformLogin.domain.User;
@@ -39,11 +47,14 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
+        .cors(withDefaults())
         // .csrf(csrf -> csrf.disable())
         .csrf(csrf -> csrf
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+        .addFilterAfter(new CookieCsrfFilter(), BasicAuthenticationFilter.class)
         .authorizeHttpRequests(authorize -> authorize
             // .requestMatchers("/api/login").permitAll()
+            .requestMatchers("/csrf").permitAll()
             .anyRequest().authenticated())
         .headers(headers -> headers.frameOptions(options -> options.sameOrigin()))
         .formLogin(login -> login
@@ -112,6 +123,18 @@ public class SecurityConfiguration {
     PrintWriter out = response.getWriter();
     out.write(jsonString);
     out.flush();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOriginPatterns(Collections.singletonList("*"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setAllowCredentials(true);
+    source.registerCorsConfiguration("/**", config);
+    return source;
   }
 
 }
