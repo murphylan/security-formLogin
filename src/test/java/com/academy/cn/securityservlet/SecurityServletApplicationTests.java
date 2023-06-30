@@ -1,10 +1,10 @@
-package com.academy.securityformLogin;
+package com.academy.cn.securityservlet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SecurityFormLoginApplicationTests {
+class SecurityServletApplicationTests {
 
 	@Test
 	void contextLoads() {

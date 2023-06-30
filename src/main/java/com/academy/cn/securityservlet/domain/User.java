@@ -1,4 +1,4 @@
-package com.academy.securityformLogin.domain;
+package com.academy.cn.securityservlet.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

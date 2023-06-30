@@ -32,3 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 cookie
+.DS_Store
